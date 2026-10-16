@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Inventory Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <h2>SmartStore</h2>
+        <p class="sidebar-subtitle">Inventory Management</p>
+
+        <nav>
+            <a href="#dashboard">Dashboard</a>
+            <a href="#add-product">Add Product</a>
+            <a href="#products">Products</a>
+            <a href="#sales">Sales Management</a>
+            <a href="#reports">Inventory Reports</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header id="dashboard" class="page-header">
+            <div>
+                <h1>General Provision Store</h1>
+                <p>Smart Inventory Management Dashboard</p>
+            </div>
+            <span class="admin">Store Admin</span>
+        </header>
+
+        <!-- Dashboard summary -->
+        <section class="stats">
+            <div class="card">
+                <p>Total Products</p>
+                <h2 id="totalProducts">0</h2>
+            </div>
+            <div class="card">
+                <p>Low Stock Items</p>
+                <h2 id="lowStockCount">0</h2>
+            </div>
+            <div class="card">
+                <p>Total Stock Value</p>
+                <h2 id="stockValue">₹0.00</h2>
+            </div>
+        </section>
+
+        <!-- Add Product Form -->
+        <section class="panel" id="add-product">
+            <h2>Add New Product</h2>
+            <p class="muted">Enter the details to add a product to your inventory.</p>
+
+            <form id="productForm">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="productName">Product Name</label>
+                        <input
+                            type="text"
+                            id="productName"
+                            maxlength="100"
+                            placeholder="e.g. Almonds 250g"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="productCategory">Category</label>
+                        <input
+                            type="text"
+                            id="productCategory"
+                            maxlength="50"
+                            placeholder="e.g. Dry Fruits"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="productPrice">Price (₹)</label>
+                        <input
+                            type="number"
+                            id="productPrice"
+                            min="0.01"
+                            max="99999999.99"
+                            step="0.01"
+                            placeholder="180"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="productQuantity">Quantity</label>
+                        <input
+                            type="number"
+                            id="productQuantity"
+                            min="0"
+                            max="2147483647"
+                            step="1"
+                            placeholder="10"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <button type="submit" id="addProductButton">Add Product</button>
+                <button type="reset" class="secondary-button">Clear Form</button>
+                <p id="productMessage" class="message" role="status"></p>
+            </form>
+        </section>
+
+        <!-- Product inventory -->
+        <section class="panel" id="products">
+            <h2>Product Inventory</h2>
+            <p class="muted">View and search products stored in MySQL.</p>
+
+            <div class="search-box">
+                <input
+                    type="search"
+                    id="searchInput"
+                    placeholder="Search product name or category..."
+                    aria-label="Search products"
+                >
+                <button type="button" id="searchButton">Search</button>
+                <button type="button" id="resetButton" class="secondary-button">
+                    Show All
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTable">
+                        <tr>
+                            <td colspan="6">Loading products...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p id="tableMessage" class="message" role="status"></p>
+        </section>
+
+        <section class="bottom-grid">
+            <!-- Sales management -->
+            <div class="panel" id="sales">
+                <h2>Sales Management</h2>
+                <p class="muted">Record a sale and reduce the available stock.</p>
+
+                <form id="saleForm">
+                    <div class="form-field">
+                        <label for="saleProductId">Product ID</label>
+                        <input
+                            type="number"
+                            id="saleProductId"
+                            min="1"
+                            step="1"
+                            placeholder="Enter product ID"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="saleQuantity">Quantity Sold</label>
+                        <input
+                            type="number"
+                            id="saleQuantity"
+                            min="1"
+                            step="1"
+                            placeholder="Enter quantity sold"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" id="recordSaleButton">Record Sale</button>
+                    <p id="saleMessage" class="message" role="status"></p>
+                </form>
+            </div>
+
+            <!-- Inventory reports -->
+            <div class="panel" id="reports">
+                <h2>Inventory Reports</h2>
+                <p class="muted">Find products that need restocking.</p>
+
+                <form id="reportForm">
+                    <div class="form-field">
+                        <label for="threshold">Low-Stock Threshold</label>
+                        <input
+                            type="number"
+                            id="threshold"
+                            min="0"
+                            step="1"
+                            value="10"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit">View Low Stock</button>
+                    <button type="button" id="allProductsButton"
+                            class="secondary-button">
+                        View All Products
+                    </button>
+
+                    <p id="reportMessage" class="message" role="status"></p>
+                </form>
+            </div>
+        </section>
+
+        <footer>Smart Inventory Management System · Python + MySQL</footer>
+    </main>
+
+<script>
+"use strict";
+
+async function apiRequest(url, options = {}) {
+    const response = await fetch(url, options);
+
+    let data;
+    try {
+        data = await response.json();
+    } catch {
+        throw new Error("The server returned an invalid response.");
+    }
+
+    if (!response.ok) {
+        throw new Error(data.error || "Request failed.");
+    }
+
+    return data;
+}
+
+function showMessage(id, message, isError = false) {
+    const element = document.getElementById(id);
+    element.textContent = message;
+    element.classList.toggle("error-message", isError);
+}
+
+function createCell(value) {
+    const cell = document.createElement("td");
+    cell.textContent = value ?? "";
+    return cell;
+}
+
+function renderProducts(products) {
+    const tbody = document.getElementById("productTable");
+    tbody.replaceChildren();
+
+    if (!products.length) {
+        const row = document.createElement("tr");
+        const cell = createCell("No products found.");
+        cell.colSpan = 6;
+        row.appendChild(cell);
+        tbody.appendChild(row);
+        return;
+    }
+
+    for (const product of products) {
+        const row = document.createElement("tr");
+
+        row.appendChild(createCell(product.product_id));
+        row.appendChild(createCell(product.product_name));
+        row.appendChild(createCell(product.category));
+        row.appendChild(createCell(
+            "₹" + Number(product.price).toFixed(2)
+        ));
+        row.appendChild(createCell(product.quantity));
+
+        const statusCell = document.createElement("td");
+        const status = document.createElement("span");
+
+        if (Number(product.quantity) < 10) {
+            status.textContent = "Low Stock";
+            status.className = "status low-stock";
+        } else {
+            status.textContent = "In Stock";
+            status.className = "status in-stock";
+        }
+
+        statusCell.appendChild(status);
+        row.appendChild(statusCell);
+        tbody.appendChild(row);
+    }
+}
+
+async function refreshDashboard() {
+    const [allData, lowData] = await Promise.all([
+        apiRequest("/api/products"),
+        apiRequest("/api/low-stock?threshold=10")
+    ]);
+
+    document.getElementById("totalProducts").textContent = allData.total;
+    document.getElementById("lowStockCount").textContent = lowData.total;
+
+    const totalValue = allData.products.reduce((sum, product) => {
+        return sum + Number(product.price) * Number(product.quantity);
+    }, 0);
+
+    document.getElementById("stockValue").textContent =
+        "₹" + totalValue.toFixed(2);
+}
+
+async function loadProducts(search = "") {
+    try {
+        const data = await apiRequest(
+            "/api/products?q=" + encodeURIComponent(search)
+        );
+
+        renderProducts(data.products);
+        showMessage("tableMessage", data.total + " product(s) found.");
+        await refreshDashboard();
+    } catch (error) {
+        showMessage("tableMessage", error.message, true);
+    }
+}
+
+// ADD PRODUCT
+document.getElementById("productForm").addEventListener(
+    "submit", async event => {
+        event.preventDefault();
+
+        const button = document.getElementById("addProductButton");
+        button.disabled = true;
+        showMessage("productMessage", "Saving product...");
+
+        const product = {
+            product_name: document.getElementById("productName").value.trim(),
+            category: document.getElementById("productCategory").value.trim(),
+            price: document.getElementById("productPrice").value,
+            quantity: document.getElementById("productQuantity").value
+        };
+
+        try {
+            const price = Number(product.price);
+            const quantity = Number(product.quantity);
+
+            if (!product.product_name || !product.category) {
+                throw new Error("Product name and category are required.");
+            }
+
+            if (product.product_name.length > 100 ||
+                product.category.length > 50) {
+                throw new Error("Product name or category is too long.");
+            }
+
+            if (!Number.isFinite(price) || price <= 0 ||
+                Math.round(price * 100) !== price * 100) {
+                throw new Error("Enter a positive price with up to 2 decimal places.");
+            }
+
+            if (!Number.isInteger(quantity) || quantity < 0) {
+                throw new Error("Quantity must be a non-negative whole number.");
+            }
+
+            const result = await apiRequest("/api/products", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(product)
+            });
+
+            document.getElementById("productForm").reset();
+
+            showMessage(
+                "productMessage",
+                result.message + " New product ID: " + result.product_id
+            );
+
+            document.getElementById("searchInput").value = "";
+            await loadProducts();
+        } catch (error) {
+            showMessage("productMessage", error.message, true);
+        } finally {
+            button.disabled = false;
+        }
+    }
+);
+
+// SEARCH PRODUCTS
+document.getElementById("searchButton").addEventListener("click", () => {
+    loadProducts(document.getElementById("searchInput").value.trim());
+});
+
+document.getElementById("searchInput").addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        loadProducts(event.target.value.trim());
+    }
+});
+
+document.getElementById("resetButton").addEventListener("click", () => {
+    document.getElementById("searchInput").value = "";
+    loadProducts();
+});
+
+// RECORD A SALE
+document.getElementById("saleForm").addEventListener(
+    "submit", async event => {
+        event.preventDefault();
+
+        const button = document.getElementById("recordSaleButton");
+        button.disabled = true;
+
+        const productId = Number(
+            document.getElementById("saleProductId").value
+        );
+        const quantity = Number(
+            document.getElementById("saleQuantity").value
+        );
+
+        try {
+            if (!Number.isInteger(productId) || productId <= 0 ||
+                !Number.isInteger(quantity) || quantity <= 0) {
+                throw new Error("Enter a valid product ID and quantity.");
+            }
+
+            const result = await apiRequest("/api/sales", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity_sold: quantity
+                })
+            });
+
+            showMessage(
+                "saleMessage",
+                result.message + " Total: ₹" +
+                Number(result.total_amount).toFixed(2)
+            );
+
+            document.getElementById("saleForm").reset();
+            await loadProducts();
+        } catch (error) {
+            showMessage("saleMessage", error.message, true);
+        } finally {
+            button.disabled = false;
+        }
+    }
+);
+
+// LOW-STOCK REPORT
+document.getElementById("reportForm").addEventListener(
+    "submit", async event => {
+        event.preventDefault();
+
+        const threshold = Number(
+            document.getElementById("threshold").value
+        );
+
+        try {
+            if (!Number.isInteger(threshold) || threshold < 0) {
+                throw new Error("Enter a non-negative whole-number threshold.");
+            }
+
+            const data = await apiRequest(
+                "/api/low-stock?threshold=" + threshold
+            );
+
+            renderProducts(data.products);
+            showMessage(
+                "reportMessage",
+                data.total + " low-stock product(s) found."
+            );
+            showMessage("tableMessage", "Showing low-stock products.");
+        } catch (error) {
+            showMessage("reportMessage", error.message, true);
+        }
+    }
+);
+
+document.getElementById("allProductsButton").addEventListener("click", () => {
+    document.getElementById("searchInput").value = "";
+    showMessage("reportMessage", "");
+    loadProducts();
+});
+
+// Initial load
+loadProducts();
+</script>
+</body>
+</html>
